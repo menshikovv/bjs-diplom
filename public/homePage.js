@@ -4,8 +4,8 @@ logoutButton.action = function() {
         if (response.success) {
             location.reload();
         } else {
-            // Используйте метод отображения сообщения на странице вместо alert
-            logoutButton.setMessage(false, `Ошибка при выходе: ${response.error}`);
+            // Удалить вызов setMessage, так как у LogoutButton нет такого метода
+            console.error(`Ошибка при выходе: ${response.error}`);
         }
     });
 };
@@ -14,8 +14,7 @@ ApiConnector.current((response) => {
     if (response.success) {
         ProfileWidget.showProfile(response.data);
     } else {
-        // Используйте метод отображения сообщения на странице вместо alert
-        ProfileWidget.setMessage(false, `Ошибка получения информации о пользователе: ${response.error}`);
+        console.error(`Ошибка получения информации о пользователе: ${response.error}`);
     }
 });
 
@@ -26,8 +25,7 @@ function updateRates() {
             ratesBoard.clearTable();
             ratesBoard.fillTable(response.data);
         } else {
-            // Используйте метод отображения сообщения на странице вместо alert
-            ratesBoard.setMessage(false, `Ошибка получения курсов валют: ${response.error}`);
+            console.error(`Ошибка получения курсов валют: ${response.error}`);
         }
     });
 }
@@ -71,17 +69,16 @@ moneyManager.sendMoneyCallback = function(data) {
 
 const favoritesWidget = new FavoritesWidget();
 
-function updateFavorites() {
-    // Убираем лишний запрос, используем данные из ответа
+function updateFavorites(data) {
     favoritesWidget.clearTable();
-    favoritesWidget.fillTable(response.data);
-    moneyManager.updateUsersList(response.data);
+    favoritesWidget.fillTable(data);
+    moneyManager.updateUsersList(data);
 }
 
 favoritesWidget.addUserCallback = function(data) {
     ApiConnector.addUserToFavorites(data, (response) => {
         if (response.success) {
-            updateFavorites(response.data); // Передаем данные из ответа
+            updateFavorites(response.data);
             favoritesWidget.setMessage(true, "Пользователь успешно добавлен в избранное");
         } else {
             favoritesWidget.setMessage(false, `Ошибка добавления в избранное: ${response.error}`);
@@ -92,7 +89,7 @@ favoritesWidget.addUserCallback = function(data) {
 favoritesWidget.removeUserCallback = function(data) {
     ApiConnector.removeUserFromFavorites(data, (response) => {
         if (response.success) {
-            updateFavorites(response.data); // Передаем данные из ответа
+            updateFavorites(response.data);
             favoritesWidget.setMessage(true, "Пользователь успешно удален из избранного");
         } else {
             favoritesWidget.setMessage(false, `Ошибка удаления из избранного: ${response.error}`);
